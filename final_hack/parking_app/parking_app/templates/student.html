@@ -1,0 +1,283 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Student Portal</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Arial, sans-serif;
+            background: #f0f2f5;
+            margin: 0;
+            padding: 0;
+            color: #2c3e50;
+        }
+        .container {
+            max-width: 1100px;
+            margin: 40px auto;
+            padding: 0 20px;
+        }
+        h1 {
+            text-align: center;
+            font-size: 2.5rem;
+            margin-bottom: 30px;
+            font-weight: 700;
+        }
+
+        /* ---------- Tabs ---------- */
+        .tabs {
+            display: flex;
+            justify-content: center;
+            margin-bottom: 30px;
+            flex-wrap: wrap;
+        }
+        .tab {
+            background: #fff;
+            padding: 12px 25px;
+            margin: 0 5px;
+            border-radius: 10px 10px 0 0;
+            cursor: pointer;
+            font-weight: 600;
+            color: #555;
+            transition: all 0.3s;
+            display: none; /* hidden initially */
+        }
+        .tab.active {
+            background: linear-gradient(135deg, #28a745, #218838);
+            color: #fff;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.15);
+        }
+        .tab:hover {
+            background: #f0f2f5;
+        }
+
+        /* tab content */
+        .tab-content {
+            background: #fff;
+            border-radius: 10px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+            padding: 25px;
+            display: none;
+        }
+        .tab-content.active {
+            display: block;
+        }
+
+        /* form */
+        form {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+        input[type="text"], input[type="file"], select {
+            width: 250px;
+            padding: 12px;
+            margin: 12px 0;
+            border: 1px solid #ccd6dd;
+            border-radius: 8px;
+            font-size: 15px;
+            transition: border-color 0.3s;
+        }
+        input[type="text"]:focus, input[type="file"]:focus, select:focus {
+            border-color: #28a745;
+            outline: none;
+        }
+        button {
+            padding: 12px 32px;
+            background: linear-gradient(135deg, #28a745, #218838);
+            color: #fff;
+            font-size: 16px;
+            font-weight: 500;
+            border: none;
+            border-radius: 10px;
+            cursor: pointer;
+            transition: all 0.3s;
+            margin-top: 10px;
+        }
+        button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 10px rgba(0,0,0,0.15);
+        }
+
+        /* counters */
+        .counters {
+            display: flex;
+            justify-content: center;
+            flex-wrap: wrap;
+            margin-top: 25px;
+            gap: 20px;
+        }
+        .counter-card {
+            background: linear-gradient(135deg, #ffffff, #f5f7fa);
+            padding: 18px 28px;
+            border-radius: 14px;
+            box-shadow: 0 5px 14px rgba(0,0,0,0.1);
+            text-align: center;
+            min-width: 150px;
+        }
+        .counter-card span.value {
+            display: block;
+            font-size: 1.6rem;
+            font-weight: 700;
+            color: #28a745;
+            margin-top: 5px;
+        }
+        .counter-card span.label {
+            display: block;
+            font-size: 0.95rem;
+            color: #555;
+        }
+
+        /* result images */
+        .result-img {
+            max-width: 90%;
+            margin: 25px auto;
+            display: block;
+            border-radius: 14px;
+            box-shadow: 0 5px 14px rgba(0,0,0,0.1);
+            transition: transform 0.25s ease;
+        }
+        .result-img:hover {
+            transform: scale(1.02);
+        }
+
+        @media (max-width: 600px) {
+            input[type="text"], input[type="file"], select {
+                width: 90%;
+            }
+            .counter-card {
+                min-width: 120px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Student Portal</h1>
+
+        <!-- Tabs -->
+        <div class="tabs">
+            <div class="tab active" data-tab="upload">Upload & Check</div>
+            <div class="tab" data-tab="counters">Counters</div>
+            <div class="tab" data-tab="images">Images</div>
+            <div class="tab" data-tab="grid">Grid Map</div>
+        </div>
+
+      
+        <div class="tab-content active" id="upload">
+            <form id="checkForm" enctype="multipart/form-data">
+               
+                <select name="lot_name" id="lotSelect" required>
+                    <option value="" disabled selected>Select Parking Lot</option>
+                </select>
+
+                <input type="file" name="file" id="file" accept="image/*" required>
+                <button type="submit">Check Lot</button>
+            </form>
+        </div>
+
+        <div class="tab-content" id="counters">
+            <div class="counters">
+                <div class="counter-card">
+                    <span class="label">Free Spots</span>
+                    <span id="free_count" class="value">0</span>
+                </div>
+                <div class="counter-card">
+                    <span class="label">Occupied Spots</span>
+                    <span id="occupied_count" class="value">0</span>
+                </div>
+                <div class="counter-card">
+                    <span class="label">Total Spots</span>
+                    <span id="total_count" class="value">0</span>
+                </div>
+                <div class="counter-card">
+                    <span class="label">Occupancy</span>
+                    <span id="occupancy_percent" class="value">0%</span>
+                </div>
+            </div>
+        </div>
+
+        <div class="tab-content" id="images">
+            <img id="annotated_image" class="result-img" src="" alt="Annotated Parking Lot">
+        </div>
+
+        <div class="tab-content" id="grid">
+            <h2>Grid Map</h2>
+            <img id="grid_map" class="result-img" src="" alt="Parking Grid Map">
+        </div>
+    </div>
+
+    <script>
+       
+        const tabs = document.querySelectorAll('.tab');
+        const contents = document.querySelectorAll('.tab-content');
+
+        function showTabs() {
+            tabs.forEach(tab => tab.style.display = 'inline-block');
+        }
+
+        tabs.forEach(tab => {
+            tab.addEventListener('click', () => {
+                tabs.forEach(t => t.classList.remove('active'));
+                tab.classList.add('active');
+                contents.forEach(c => c.classList.remove('active'));
+                document.getElementById(tab.dataset.tab).classList.add('active');
+            });
+        });
+
+        // load lots
+        async function loadLots() {
+            const res = await fetch('/lots');
+            const data = await res.json();
+            const select = document.getElementById('lotSelect');
+
+            data.lots.forEach(lot => {
+                const option = document.createElement('option');
+                option.value = lot;
+                option.textContent = lot;
+                select.appendChild(option);
+            });
+        }
+
+        loadLots();
+
+        // submit form
+        const form = document.getElementById('checkForm');
+        form.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const lotName = document.getElementById('lotSelect').value;
+            const fileInput = document.getElementById('file');
+            const file = fileInput.files[0];
+            const formData = new FormData();
+            formData.append('lot_name', lotName);
+            formData.append('file', file);
+
+            const response = await fetch('/student/check', {
+                method: 'POST',
+                body: formData
+            });
+
+            const data = await response.json();
+
+            // update counters
+            document.getElementById('free_count').textContent = data.free_count;
+            document.getElementById('occupied_count').textContent = data.occupied_count;
+            document.getElementById('total_count').textContent = data.total;
+            document.getElementById('occupancy_percent').textContent = data.taken_spots + '%';
+
+            // updated annotated image
+            const annotated = document.getElementById('annotated_image');
+            annotated.src = data.annotated_image + '?t=' + new Date().getTime();
+
+            // update grid map
+            if (data.grid_map) {
+                const grid = document.getElementById('grid_map');
+                grid.src = data.grid_map + '?t=' + new Date().getTime();
+            }
+
+            // reveal tab, switch counters
+            showTabs();
+            document.querySelector('.tab[data-tab="counters"]').click();
+        });
+    </script>
+</body>
+</html>

@@ -1,0 +1,17 @@
+
+
+# to remove venv
+rmdir .venv -Recurse -Force
+
+#create 
+python -m venv .venv
+
+pip install python-multipart
+
+#pip install fastapi uvicorn[standard] opencv-python torch torchvision jinja2
+
+#use existing
+cd "C:\Users\golwa\OneDrive\Desktop\final_hack\parking_app"
+python -m uvicorn app:app --reload
+
+

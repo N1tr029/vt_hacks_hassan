@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>HokiePark</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f2f2f2;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+        }
+        .container {
+            background-color: #fff;
+            padding: 50px 70px;
+            border-radius: 15px;
+            box-shadow: 0 6px 20px rgba(0,0,0,0.1);
+            text-align: center;
+        }
+        h1 {
+            color: #333;
+            margin-bottom: 40px;
+            font-size: 36px;
+        }
+        .links {
+            display: flex;
+            justify-content: center;
+            gap: 30px;
+        }
+        .links a {
+            text-decoration: none;
+            background-color: #218838;
+            color: #fff;
+            padding: 15px 35px;
+            border-radius: 10px;
+            font-size: 18px;
+            transition: background-color 0.3s, transform 0.2s;
+        }
+        .links a:hover {
+            background-color: #218838;
+            transform: translateY(-3px);
+        }
+        @media (max-width: 500px) {
+            .container {
+                padding: 30px 20px;
+            }
+            .links {
+                flex-direction: column;
+                gap: 20px;
+            }
+            .links a {
+                padding: 12px 25px;
+                font-size: 16px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>HokiePark</h1>
+        <div class="links">
+            <a href="/admin">Admin Portal</a>
+            <a href="/student">Student Portal</a>
+        </div>
+    </div>
+</body>
+</html>
