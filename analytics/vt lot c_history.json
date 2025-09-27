@@ -1,0 +1,60 @@
+{
+  "checks": [
+    {
+      "timestamp": "2025-09-27T18:51:50.243803",
+      "free_count": 5,
+      "occupied_count": 3,
+      "total": 8
+    }
+  ],
+  "spot_history": {
+    "0": [
+      {
+        "timestamp": "2025-09-27T18:51:50.243803",
+        "status": "Free"
+      }
+    ],
+    "1": [
+      {
+        "timestamp": "2025-09-27T18:51:50.243803",
+        "status": "Occupied"
+      }
+    ],
+    "2": [
+      {
+        "timestamp": "2025-09-27T18:51:50.243803",
+        "status": "Free"
+      }
+    ],
+    "3": [
+      {
+        "timestamp": "2025-09-27T18:51:50.243803",
+        "status": "Occupied"
+      }
+    ],
+    "4": [
+      {
+        "timestamp": "2025-09-27T18:51:50.243803",
+        "status": "Free"
+      }
+    ],
+    "5": [
+      {
+        "timestamp": "2025-09-27T18:51:50.243803",
+        "status": "Free"
+      }
+    ],
+    "6": [
+      {
+        "timestamp": "2025-09-27T18:51:50.243803",
+        "status": "Free"
+      }
+    ],
+    "7": [
+      {
+        "timestamp": "2025-09-27T18:51:50.243803",
+        "status": "Occupied"
+      }
+    ]
+  }
+}

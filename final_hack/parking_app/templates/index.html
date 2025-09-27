@@ -1,0 +1,33 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8"/>
+  <meta name="viewport" content="width=device-width,initial-scale=1"/>
+  <title>Parking App</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="https://unpkg.com/htmx.org@1.9.12"></script>
+</head>
+<body class="bg-gray-50 text-gray-900">
+  <header class="bg-white border-b">
+    <div class="max-w-5xl mx-auto px-4 py-4 flex items-center justify-between">
+      <h1 class="text-xl font-semibold">🚗 Parking App</h1>
+      <nav class="text-sm">
+        <a class="mr-4 hover:underline" href="/">Home</a>
+        <a class="mr-4 hover:underline" href="/admin">Admin</a>
+        <a class="hover:underline" href="/student">Student</a>
+      </nav>
+    </div>
+  </header>
+
+  <main class="max-w-5xl mx-auto px-4 py-8">
+    <div class="rounded-2xl bg-white shadow p-6">
+      <h2 class="text-lg font-semibold">Welcome</h2>
+      <p class="text-gray-600 mt-2">Use <b>Admin</b> to upload a lot image and draw spot boxes. Use <b>Student</b> to upload a current photo of the lot and get availability + analytics.</p>
+      <div class="mt-6">
+        <a href="/admin" class="inline-block rounded-xl bg-gray-900 text-white px-4 py-2 mr-2">Go to Admin</a>
+        <a href="/student" class="inline-block rounded-xl bg-gray-200 text-gray-900 px-4 py-2">Go to Student</a>
+      </div>
+    </div>
+  </main>
+</body>
+</html>

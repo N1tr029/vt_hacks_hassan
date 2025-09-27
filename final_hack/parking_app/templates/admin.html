@@ -1,0 +1,168 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8"/>
+  <meta name="viewport" content="width=device-width,initial-scale=1"/>
+  <title>Admin · Parking App</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-gray-50 text-gray-900">
+  <header class="bg-white border-b">
+    <div class="max-w-6xl mx-auto px-4 py-4 flex items-center justify-between">
+      <h1 class="text-xl font-semibold">Admin</h1>
+      <nav class="text-sm">
+        <a class="mr-4 hover:underline" href="/">Home</a>
+        <a class="hover:underline" href="/student">Student</a>
+      </nav>
+    </div>
+  </header>
+
+  <main class="max-w-6xl mx-auto px-4 py-6 space-y-6">
+    <!-- Step 1: Upload image -->
+    <section class="bg-white shadow rounded-2xl p-6">
+      <h2 class="text-lg font-semibold">1) Upload Lot Image</h2>
+      <form id="uploadForm" class="mt-4 grid gap-3 md:grid-cols-3">
+        <input class="rounded-xl border px-3 py-2 md:col-span-1" name="lot_name" placeholder="lot name (e.g., lot_a)" required>
+        <input class="rounded-xl border px-3 py-2 md:col-span-1" type="file" name="file" accept="image/*" required>
+        <button class="rounded-xl bg-gray-900 text-white px-4 py-2 md:col-span-1">Upload</button>
+      </form>
+      <div id="uploadMsg" class="text-sm text-gray-700 mt-3"></div>
+    </section>
+
+    <!-- Step 2: Draw boxes on the image (in-browser, no OpenCV window) -->
+    <section class="bg-white shadow rounded-2xl p-6">
+      <h2 class="text-lg font-semibold">2) Draw Parking Spots</h2>
+      <p class="text-sm text-gray-600 mb-3">Click-drag to draw each spot. Use Undo/Clear as needed. Coordinates match the original image resolution.</p>
+
+      <div id="canvasWrap" class="border rounded-xl overflow-auto max-h-[70vh] bg-gray-100 hidden">
+        <canvas id="lotCanvas"></canvas>
+      </div>
+
+      <div class="flex items-center gap-2 mt-3">
+        <button id="undoBtn" class="rounded-xl bg-gray-200 px-3 py-2" type="button">Undo</button>
+        <button id="clearBtn" class="rounded-xl bg-gray-200 px-3 py-2" type="button">Clear</button>
+        <div class="text-sm text-gray-600">Boxes: <span id="count">0</span></div>
+      </div>
+    </section>
+
+    <!-- Step 3: Save -->
+    <section class="bg-white shadow rounded-2xl p-6">
+      <h2 class="text-lg font-semibold">3) Save Grid</h2>
+      <button id="saveBtn" class="rounded-xl bg-gray-900 text-white px-4 py-2" type="button">Save Grid</button>
+      <div id="saveMsg" class="text-sm text-gray-700 mt-3"></div>
+    </section>
+  </main>
+
+  <script>
+    const uploadForm = document.getElementById('uploadForm');
+    const uploadMsg  = document.getElementById('uploadMsg');
+    const canvasWrap = document.getElementById('canvasWrap');
+    const canvas     = document.getElementById('lotCanvas');
+    const ctx        = canvas.getContext('2d');
+    const undoBtn    = document.getElementById('undoBtn');
+    const clearBtn   = document.getElementById('clearBtn');
+    const saveBtn    = document.getElementById('saveBtn');
+    const countEl    = document.getElementById('count');
+
+    let lotName = null;
+    let imageURL = null;
+    let img = null;
+    let boxes = [];  // {x1,y1,x2,y2}
+    let drawing = false;
+    let startX = 0, startY = 0;
+
+    function drawAll() {
+      if (!img) return;
+      ctx.clearRect(0,0,canvas.width,canvas.height);
+      ctx.drawImage(img, 0, 0);
+      ctx.lineWidth = 2;
+      for (const b of boxes) {
+        ctx.strokeStyle = "lime";
+        ctx.strokeRect(b.x1, b.y1, b.x2 - b.x1, b.y2 - b.y1);
+      }
+      countEl.textContent = boxes.length;
+    }
+
+    uploadForm.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const fd = new FormData(uploadForm);
+      lotName = fd.get('lot_name');
+      const res = await fetch('/admin/upload', { method: 'POST', body: fd });
+      const data = await res.json();
+      if (data.error) { uploadMsg.textContent = data.error; return; }
+      imageURL = data.image_url;
+      uploadMsg.textContent = `Uploaded for ${data.lot_name}. Draw boxes below.`;
+
+      img = new Image();
+      img.onload = () => {
+        canvas.width  = img.naturalWidth;   // 1:1 with original image
+        canvas.height = img.naturalHeight;
+        canvasWrap.classList.remove('hidden');
+        boxes = [];
+        drawAll();
+      };
+      img.src = imageURL + "?t=" + Date.now(); // cache-bust
+    });
+
+    canvas.addEventListener('mousedown', (e) => {
+      if (!img) return;
+      const rect = canvas.getBoundingClientRect();
+      startX = Math.round(e.clientX - rect.left);
+      startY = Math.round(e.clientY - rect.top);
+      drawing = true;
+    });
+
+    canvas.addEventListener('mousemove', (e) => {
+      if (!drawing || !img) return;
+      drawAll();
+      const rect = canvas.getBoundingClientRect();
+      const x = Math.round(e.clientX - rect.left);
+      const y = Math.round(e.clientY - rect.top);
+      ctx.strokeStyle = "red";
+      ctx.strokeRect(startX, startY, x - startX, y - startY);
+    });
+
+    canvas.addEventListener('mouseup', (e) => {
+      if (!drawing || !img) return;
+      const rect = canvas.getBoundingClientRect();
+      const endX = Math.round(e.clientX - rect.left);
+      const endY = Math.round(e.clientY - rect.top);
+      drawing = false;
+
+      const x1 = Math.max(0, Math.min(startX, endX));
+      const y1 = Math.max(0, Math.min(startY, endY));
+      const x2 = Math.min(canvas.width,  Math.max(startX, endX));
+      const y2 = Math.min(canvas.height, Math.max(startY, endY));
+
+      if (x2 - x1 > 4 && y2 - y1 > 4) {
+        boxes.push({ x1, y1, x2, y2 });
+        drawAll();
+      }
+    });
+
+    undoBtn.addEventListener('click', () => {
+      boxes.pop();
+      drawAll();
+    });
+
+    clearBtn.addEventListener('click', () => {
+      boxes = [];
+      drawAll();
+    });
+
+    saveBtn.addEventListener('click', async () => {
+      if (!lotName || boxes.length === 0) {
+        document.getElementById('saveMsg').textContent = 'Upload image and draw at least one box first.';
+        return;
+      }
+      const res = await fetch('/admin/save_grid', {
+        method: 'POST',
+        headers: { 'Content-Type':'application/json' },
+        body: JSON.stringify({ lot_name: lotName, rects: boxes })
+      });
+      const data = await res.json();
+      document.getElementById('saveMsg').textContent = data.message || data.error || 'Done.';
+    });
+  </script>
+</body>
+</html>
