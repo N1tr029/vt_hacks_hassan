@@ -1,0 +1,36 @@
+{
+  "checks": [
+    {
+      "timestamp": "2025-09-27T02:55:52.564749",
+      "free_count": 2,
+      "occupied_count": 2,
+      "total": 4
+    }
+  ],
+  "spot_history": {
+    "0": [
+      {
+        "timestamp": "2025-09-27T02:55:52.564749",
+        "status": "Occupied"
+      }
+    ],
+    "1": [
+      {
+        "timestamp": "2025-09-27T02:55:52.564749",
+        "status": "Free"
+      }
+    ],
+    "2": [
+      {
+        "timestamp": "2025-09-27T02:55:52.564749",
+        "status": "Occupied"
+      }
+    ],
+    "3": [
+      {
+        "timestamp": "2025-09-27T02:55:52.564749",
+        "status": "Free"
+      }
+    ]
+  }
+}
