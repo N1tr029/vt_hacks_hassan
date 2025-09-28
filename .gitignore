@@ -1,0 +1,15 @@
+# Python
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+.DS_Store
+
+# Virtual envs
+.venv/
+
+# Runtime artifacts (don’t version these)
+results/
+crops/
+images/
+analytics/
