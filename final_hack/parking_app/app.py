@@ -34,7 +34,7 @@ app.mount("/results", StaticFiles(directory=str(RESULTS_DIR)), name="results")
 app.mount("/crops", StaticFiles(directory=str(CROPS_DIR)), name="crops")
 app.mount("/static", StaticFiles(directory=str(STATIC_DIR)), name="static")
 app.mount("/images", StaticFiles(directory=str(IMAGES_DIR)), name="images")
-templates = Jinja2Templates(directory=str(TEMPLATES_DIR)) 
+templates = Jinja2Templates(directory=str(TEMPLATES_DIR))
 
 # ---- CNN identifier ----
 class SpotCNN(nn.Module):
@@ -111,8 +111,10 @@ def calculate_spot_analytics(spot_history):
     occupancy_rate = round((occupied / total) * 100, 1)
     current_status = spot_history[-1]["status"]
 
-    turnovers = sum(1 for i in range(1, len(spot_history))
-                    if spot_history[i]["status"] != spot_history[i-1]["status"])
+    turnovers = sum(
+        1 for i in range(1, len(spot_history))
+        if spot_history[i]["status"] != spot_history[i-1]["status"]
+    )
 
     occupied_streaks, current_streak = [], 0
     for h in spot_history:
@@ -183,33 +185,29 @@ async def home(request: Request):
 async def admin_page(request: Request):
     return templates.TemplateResponse("admin.html", {"request": request})
 
+# Upload only (no OpenCV GUI here)
 @app.post("/admin/upload")
 async def admin_upload(file: UploadFile = File(...), lot_name: str = Form(...)):
-    # Save the uploaded image
     image_path = IMAGES_DIR / file.filename
     image_path.write_bytes(await file.read())
-
-    # Return the URL so the browser can show it on a canvas and draw boxes
     return {
         "message": f"Uploaded image for lot {lot_name}",
         "lot_name": lot_name,
         "image_url": f"/images/{file.filename}"
     }
+
+# Save rectangles drawn in the browser
 @app.post("/admin/save_grid")
 async def admin_save_grid(payload: dict = Body(...)):
-    # Expecting: {"lot_name": "...", "rects": [{"x1":..,"y1":..,"x2":..,"y2":..}, ...]}
+    # Expect {"lot_name": "...", "rects": [{"x1":..,"y1":..,"x2":..,"y2":..}, ...]}
     lot_name = payload.get("lot_name")
     rects = payload.get("rects", [])
-
     if not lot_name or not rects:
         return JSONResponse({"error": "lot_name and rects required"}, status_code=400)
 
-    # Normalize to your existing (x1,y1,x2,y2) tuple format
     spots = [(int(r["x1"]), int(r["y1"]), int(r["x2"]), int(r["y2"])) for r in rects]
-
     grid_path = GRIDS_DIR / f"{lot_name}.json"
     grid_path.write_text(json.dumps(spots, indent=2))
-
     return {"message": f"Saved {len(spots)} spots for lot {lot_name}"}
 
 @app.get("/student", response_class=HTMLResponse)
@@ -259,7 +257,6 @@ async def student_check(file: UploadFile = File(...), lot_name: str = Form(...))
         color = (0, 255, 0) if label == "Free" else (0, 0, 255)
         cv2.rectangle(img, (x1, y1), (x2, y2), color, 2)
         spot_number = str(i + 1)
-
         text_size = cv2.getTextSize(spot_number, cv2.FONT_HERSHEY_SIMPLEX, 0.6, 2)[0]
         text_x = x1 + (x2 - x1 - text_size[0]) // 2
         text_y = y1 + (y2 - y1 + text_size[1]) // 2
